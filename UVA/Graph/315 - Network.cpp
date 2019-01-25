@@ -2,7 +2,7 @@
 #include <vector>
 #include <cstring>
 #include <algorithm>
-#include <fstream>
+#include <sstream>
 using namespace std;
 
 typedef vector<int> vi;
@@ -10,18 +10,18 @@ vector<vi> G;
 vi visited, dfs_num, dfs_low, parent, articulation;
 int counter, root, rootChild;
 
-int dfs(int u){
+void dfs(int u){
     dfs_num[u] = dfs_low[u] = counter++;
+    visited[u] = 1;
     
     for(auto &v : G[u]){
         if(!visited[v]){
-            visited[v] = 1;
             parent[v] = u;
             if(u == root) rootChild++;
 
             dfs(v);
 
-            if(dfs_low[v] >= dfs_num[u])
+            if(u != root && dfs_low[v] >= dfs_num[u])
                 articulation[u] = 1;
 
             dfs_low[u] = min(dfs_low[u], dfs_low[v]);
@@ -32,22 +32,25 @@ int dfs(int u){
 }
 
 int main(){
-    ofstream o("out.txt");
-    int n, u, artNum;
-    string s;
+    int n, u, v, artNum;
     while(cin >> n){
+        cin.ignore();
+
         if(!n) break;
+
         G.assign(n+1, vi()); articulation.assign(n+1, 0);
         dfs_num.assign(n+1, 0); dfs_low.assign(n+1, 0); 
         parent.assign(n+1, 0); visited.assign(n+1, 0);
 
-        cin.ignore();
+        string s;
         while(getline(cin, s)){
-            u = s[0] - 48;
-            if(!u) break;
-            for(size_t i = 2; i < s.length(); i+=2){
-                G[u].push_back(s[i] - 48);
-                G[s[i] - 48].push_back(u);
+            if(s == "0") break;
+            stringstream ss(s);
+
+            ss >> u;
+            while(ss >> v){
+                G[u].push_back(v);
+                G[v].push_back(u);
             }
         }
         
@@ -63,9 +66,9 @@ int main(){
 
         artNum = 0;
         for(size_t i = 1 ; i < n+1; i++)
-            if(articulation[i]){cout << i << " ";artNum++;} 
-        cout << endl;
-        o << artNum << endl;
+            if(articulation[i])
+                artNum++; 
+        cout << artNum << endl;
     }
     return 0;
 }
