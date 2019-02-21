@@ -1,0 +1,23 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+typedef long long ll;
+
+int main(){
+    int q;
+    cin >> q;
+    ll n, a, b, ma, mb;
+    while(q--){
+        cin >> n >> a >> b;
+        
+        ma = n * a;
+        mb = (n/2 * b);
+        if(n % 2 != 0)
+            mb += a;
+
+
+        cout << min(ma, mb) << endl;
+    }
+    return 0;
+}
